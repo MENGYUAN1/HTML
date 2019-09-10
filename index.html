@@ -4,24 +4,24 @@
     <meta content="width=device-width,initial-scale=1,minimal-ui" name="viewport">
     <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/vue-material.min.css">
     <link rel="stylesheet" href="https://unpkg.com/vue-material@beta/dist/theme/default.css">
-    <link href="https://fonts.googleapis.com/css?family=Schoolbell&display=swap" rel="stylesheet">
   </head>
     <body>
-         <h1>Emoji replacement activity</h1>
+         <h1>HTML Activity</h1>
         <div id="app">
             <md-tabs>
                 <md-tab v-for="question in questions" :key=question.name v-bind:md-label=question.name+question.status>
-                    <emoji-activity v-bind:layout-things=question.layoutItems v-bind:question-name=question.name  @questionhandler="toggleQuestionStatus"/>
+                    <doctest-activity v-bind:layout-things=question.layoutItems v-bind:question-name=question.name  @questionhandler="toggleQuestionStatus"/>
                 </md-tab>
             </md-tabs>
+            </div>
         </div>
     </body> 
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/vue-material@beta"></script>
     <script>
     Vue.use(VueMaterial.default)
-
-    Vue.component('emoji-activity', {
+    
+    Vue.component('doctest-activity', {
         props: ['layoutThings', 'questionName'],
         data: function () {
             return {
@@ -31,25 +31,25 @@
         },
         methods: {
             postContents: function () {
-                // comment: leaving the gatewayUrl empty - API will post back to itself
-                const gatewayUrl = '';
-                fetch(gatewayUrl, {
-                    method: "POST",
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({shown:{0:this.layoutItems[0].vModel},editable:{0:this.layoutItems[1].vModel}})
-                }).then(response => {
-                        return response.json()
-                    }).then(data => {
-                        this.answer = JSON.parse(JSON.stringify(data))
-                        return this.$emit('questionhandler',{data, questionName:this.questionName})
-                    })
-            }
+            // comment: leaving the gatewayUrl empty - API will post back to itself
+            const gatewayUrl = '';
+            fetch(gatewayUrl, {
+        method: "POST",
+        headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({shown:{0:this.layoutItems[0].vModel},editable:{0:this.layoutItems[1].vModel}})
+        }).then(response => {
+            return response.json()
+        }).then(data => {
+            this.answer = JSON.parse(JSON.stringify(data))
+            return this.$emit('questionhandler',{data, questionName:this.questionName})
+            })
+         }
         },
         template: 
-        \`<div class="md-layout  md-gutter">
+        `<div class="md-layout  md-gutter">
             <div id="cardGroupCreator" class="md-layout-item md-size-50">
                 <md-card>
                     <md-card-header>
@@ -60,7 +60,7 @@
                     </md-card-header>
                     <md-card-content>
                         <md-field>
-                            <md-textarea v-model="layoutItems[0].vModel" readonly></md-textarea>
+                            <div v-html="layoutItems[0].vModel"></div>
                         </md-field>
                     </md-card-content>
                 </md-card>
@@ -107,7 +107,7 @@
                 </md-card>
             </div>
         </div>
-        \`
+        `
     })
     
     new Vue({
@@ -116,48 +116,46 @@
             return {
             questions:[
                 {name:"question 1", layoutItems: [
-                {header:"Activity variables", subHeader:'comma-separated sequence comprising a string, replaced character(s), replacement characters(s)', vModel:"hello,h,hoho"},
-                {header:"Editable Code Block", subHeader:'Your code goes below', vModel:\`"hello".replace("h","hoho")\`}
+                {header:"Expected Result", subHeader:'', vModel:"<h1>Today is a day for 🍨</h1>"},
+                {header:"Editable HTML", subHeader:'Your code goes below', vModel:"<h1>Today is a day for</h1>"}
                 ], status:" 🔴"},
                 {name:"question 2", layoutItems: [
-                {header:"Activity variables", subHeader:'comma-separated sequence comprising a string, replaced character(s), replacement characters(s)', vModel:"who let the dogs out,dogs,cats"},
-                {header:"Editable Code Block", subHeader:'Your code goes below', vModel:\`"who".replace()\`}
+                {header:"Expected Result", subHeader:'', vModel:"<h2>Todos</h2><ol><li>Buy 🎃</li><li>Meet 🎅</li></ol>"},
+                {header:"Editable HTML", subHeader:'Your code goes below', vModel:"<h2>Todos</h2><ol><li>Meet 🎅</li></ol"}
                 ], status:" 🔴"},
                 {name:"question 3", layoutItems: [
-                {header:"Activity variables", subHeader:'comma-separated sequence comprising a string, replaced character(s), replacement characters(s)', vModel:"It was raining cats and dogs,cats and dogs,😺 & 🐶"},
-                {header:"Editable Code Block", subHeader:'Your code goes below', vModel:\`"It was raining cats and dogs".replace()\`}
+                {header:"Expected Result", subHeader:'', vModel:'Follow this <a href="https://blog.dnsimple.com/2016/09/how-dns-works/">link</a> to find out more about the DNS webcomic'},
+                {header:"Editable HTML", subHeader:'Your code goes below', vModel:"Follow this <a https://blog.dnsimple.com/2016/09/how-dns-works/> to find out more about the DNS webcomic"}
                 ], status:" 🔴"},
                 {name:"question 4", layoutItems: [
-                {header:"Activity variables", subHeader:'comma-separated sequence comprising a string, replaced character(s), replacement characters(s)', vModel:"Python is awesome,Python,🐍"},
-                {header:"Editable Code Block", subHeader:'Your code goes below', vModel:\`""\`}
+                {header:"Expected Result", subHeader:'', vModel:'<form action="#" method="post"><input type="text" placeholder="name" name="user_name"/><input placeholder="email" type="email" name="user_mail"/><div class="button"><button type="submit">Send your message</button></div></form>'},
+                {header:"Editable HTML", subHeader:'Your code goes below', vModel:'<form action="#" method="post"><input type="text" placeholder="name" name="user_name"/><input placeholder="" type="email" name="user_mail"/><div class="button"><button type="submit">Send your message</div></form>'}
                 ], status:" 🔴"},
                 {name:"question 5", layoutItems: [
-                {header:"Activity variables", subHeader:'comma-separated sequence comprising a string, replaced character(s), replacement characters(s)', vModel:"I wish I had a pet pony,pony,🐎"},
-                {header:"Editable Code Block", subHeader:'Your code goes below', vModel:\`""\`}
-                ], status:" 🔴"}                 
-            ]            
+                {header:"Expected Result", subHeader:'', vModel:'<table><thead><tr><th>Actual Name</th><th>Hero Name</th></tr></thead><tbody><tr><td>Peter Parker</td><td>Spiderman</td></tr><tr><td>Bruce Banner</td><td>The Hulk</td></tr></tbody></table>'},
+                {header:"Editable HTML", subHeader:'Your code goes below', vModel:'<table><thead><tr><th>Actual Name</th><th>Hero Name</th></tr></thead><tbody><tr><td>Peter Parker</td><td>Spiderman</td></tr></tbody></table>'}
+                ], status:" 🔴"}
+            ]
         }
         },
-        methods: {
+         methods: {
             toggleQuestionStatus (response) {
                 const {data, questionName} = response
                 if (data.htmlFeedback) {
                     const searchText = data.htmlFeedback
-                    if (searchText.includes("You have got the answer")) this.questions.find(item => item.name === questionName).status = " ✔️";
-                    else if (searchText === "You have missed the answer... check your code again?") this.questions.find(item => item.name === questionName).status = " 🤨";
-                    else this.questions.find(item => item.name === questionName).status = " 🔴"
+                    searchText.search(/b2d8b2/) !== -1 ?
+                        searchText.search(/#ff9999/) == -1 ?
+                        this.questions.find(item => item.name === questionName).status = " ✔️"
+                        :
+                        this.questions.find(item => item.name === questionName).status = " 🤨"
+                    :
+                    this.questions.find(item => item.name === questionName).status = " 🔴"
                 }
             }
         }
       })
     </script>
     <style lang="scss" scoped>
-    h1{
-        font-family: Schoolbell !important;
-        margin-top: 1rem;
-        padding:20px;
-        text-align: center
-    }
     .md-card {
         width: 90%;
         margin: 20px;
@@ -169,9 +167,9 @@
         padding-bottom: 16px !important;
     }
     button {
-        display:block;
-        margin: 20px 60px 20px 60px;
-        width:200px !important;
+        margin: 10px;
+        width:150px;
+        height:40px
     }
     #cardGroupCreator {
         display:flex;
@@ -204,6 +202,11 @@
         margin:auto;
         mix-blend-mode: darken
     }
+    h1{
+        padding:20px;
+        margin:auto;
+        text-align: center
+    }
     .md-content{
         min-height:300px
     }
@@ -221,8 +224,18 @@
         width:400px !important
     }
     .md-button{
-        margin:10px !important
+        margin:10px !important;
+        width:80% !important;
+        display:block
+    }
+    .md-field:after{
+        height:0px
+    }
+    table{
+        border-collapse:collapse
+    }
+    td {
+        border:1px solid black
     }
     </style>
     </html>
-    `;
